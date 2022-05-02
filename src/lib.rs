@@ -946,7 +946,35 @@ where
         self.into()
     }
 
-    /// Consume self and geterate a `Vec<usize>` which only contains the number exists in this set.
+    /// Return an interator over the indices of bits in this set.
+    /// Example:
+    ///
+    /// ```rust
+    /// use bitvec_simd::BitVec;
+    ///
+    /// let bitvec = BitVec::from_bool_iterator((0..10).map(|i| i%3 == 0));
+    /// let mut usize_iter = bitvec.usizes();
+    /// assert_eq!(usize_iter.next(), Some(0));
+    /// assert_eq!(usize_iter.next(), Some(3));
+    /// assert_eq!(usize_iter.next(), Some(6));
+    /// assert_eq!(usize_iter.next(), Some(9));
+    /// assert_eq!(usize_iter.next(), None);
+    /// ```
+    pub fn usizes(&self) -> impl Iterator<Item = usize> + '_ {
+        self.storage
+            .iter()
+            .flat_map(|x| x.to_array())
+            .flat_map(|x| {
+                (0..B::ELEMENT_BIT_WIDTH)
+                    .map(move |i| (x.wrapping_shr(i as u32)) & B::ONE_ELEMENT != B::ZERO_ELEMENT)
+            })
+            .take(self.nbits)
+            .enumerate()
+            .filter(|(_, b)| *b)
+            .map(|(i, _)| i)
+    }
+
+    /// Generate a `Vec<usize>` which only contains the indices of bits in this set.
     ///
     /// Example:
     ///
@@ -954,11 +982,11 @@ where
     /// use bitvec_simd::BitVec;
     ///
     /// let bitvec = BitVec::from_bool_iterator((0..10).map(|i| i%3 == 0));
-    /// let usize_vec = bitvec.into_usizes();
+    /// let usize_vec = bitvec.to_usizes();
     /// assert_eq!(usize_vec, vec![0,3,6,9]);
     /// ```
-    pub fn into_usizes(self) -> Vec<usize> {
-        self.into()
+    pub fn to_usizes(self) -> Vec<usize> {
+        self.usizes().collect()
     }
 }
 
@@ -1008,15 +1036,7 @@ impl_trait! {
     (Vec<usize>),
 {
     fn from(v: BitVecSimd<B, L>) -> Self {
-        v.storage
-            .into_iter()
-            .flat_map(|x| x.to_array())
-            .flat_map(|x| { (0..B::ELEMENT_BIT_WIDTH).map(move |i| (x.wrapping_shr(i as u32)) & B::ONE_ELEMENT != B::ZERO_ELEMENT) })
-            .take(v.nbits)
-            .enumerate()
-            .filter(|(_, b)| *b)
-            .map(|(i, _)| i)
-            .collect()
+        v.to_usizes()
     }
 }
 }
