@@ -109,10 +109,11 @@ where
 }
 
 /// Proc macro can not export BitVec
-/// macro_rules! can not cancot ident
-/// so we use name, name_2 for function names
+/// macro_rules! can not concat ident
+/// so we use name, name_2, etc for function names
 macro_rules! impl_operation {
     ($name:ident, $name_cloned:ident, $name_inplace:ident, $op:tt) => {
+        /// Panics if the lengths of the two bitsets aren't the same.
         pub fn $name(self, other: Self) -> Self {
             assert_eq!(self.nbits, other.nbits);
             let storage = self
@@ -126,6 +127,7 @@ macro_rules! impl_operation {
                 nbits: self.nbits,
             }
         }
+        /// Panics if the lengths of the two bitsets aren't the same.
         pub fn $name_cloned(&self, other: &Self) -> Self {
             assert_eq!(self.nbits, other.nbits);
             let storage = self
@@ -140,6 +142,7 @@ macro_rules! impl_operation {
                 nbits: self.nbits,
             }
         }
+        /// Panics if the lengths of the two bitsets aren't the same.
         pub fn $name_inplace(&mut self, other: &Self) {
             assert_eq!(self.nbits, other.nbits);
             self.storage.iter_mut().zip(other.storage.iter()).for_each(|(a, b)| a.$name_inplace(b));
@@ -679,6 +682,15 @@ where
     impl_operation!(and, and_cloned, and_inplace, &);
     impl_operation!(or, or_cloned, or_inplace, |);
     impl_operation!(xor, xor_cloned, xor_inplace, ^);
+
+    /// Doesn't change the length of `self`, so if `other` contains more bits those will be
+    /// ignored.
+    pub fn or_inplace_mismatched_len(&mut self, other: &Self) {
+        self.storage
+            .iter_mut()
+            .zip(other.storage.iter())
+            .for_each(|(a, b)| a.or_inplace(b));
+    }
 
     /// difference operation
     ///
