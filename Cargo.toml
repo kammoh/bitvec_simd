@@ -22,7 +22,6 @@ std = []
 
 [dependencies]
 wide = "0.7"
-smallvec = { version = "1.8", features = [ "const_generics", "serde" ] }
 serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dev-dependencies]

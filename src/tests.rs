@@ -2,7 +2,7 @@ use crate::*;
 
 #[test]
 fn test_bit_to_len() {
-    type T = BitVecSimd<[u64x4; 4], 4>;
+    type T = BitVecSimd<u64x4, 4>;
     // contain nothing
     assert_eq!(T::bit_to_len(0), (0, 0, 0));
     assert_eq!(T::bit_to_len(1), (0, 0, 1));
@@ -340,11 +340,9 @@ fn test_bitvec_set_raw() {
     let buffer_len = bitvec.storage.len();
     let capacity = bitvec.storage.capacity();
     let nbits = bitvec.nbits;
-    let spilled = bitvec.storage.spilled();
     let mut bitvec2 = BitVec::zeros(1);
     unsafe {
         std::mem::forget(bitvec);
-        assert!(spilled);
         bitvec2.set_raw(ptr, buffer_len, capacity, nbits);
         assert_eq!(bitvec2.get(0), Some(true));
         assert_eq!(bitvec2.get(1024), Some(true));
