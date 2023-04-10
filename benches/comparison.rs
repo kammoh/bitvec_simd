@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use criterion::*;
 
 fn benchmark_bitvector_simd(c: &mut Criterion) {
@@ -134,19 +136,73 @@ fn benchmark_bitvector_bitvec_n4(c: &mut Criterion) {
     });
 }
 
+fn benchmark_stdvec(c: &mut Criterion) {
+    let b1 = vec![true; 100_000];
+    let b2 = vec![false; 100_000];
+    c.bench_function("Vec<bool> with creation", |b| {
+        b.iter(|| {
+            black_box(
+                b1.iter()
+                    .zip(b2.iter())
+                    .map(|(a, b)| a & b)
+                    .collect::<Vec<_>>(),
+            );
+        })
+    });
+}
+
+fn benchmark_stdvec2(c: &mut Criterion) {
+    c.bench_function("Vec<bool>", |b| {
+        b.iter(|| {
+            let b1 = vec![true; 100_000];
+            let b2 = vec![false; 100_000];
+            black_box(
+                b1.iter()
+                    .zip(b2.iter())
+                    .map(|(a, b)| a & b)
+                    .collect::<Vec<_>>(),
+            );
+        })
+    });
+}
+
+fn benchmark_stdhashset(c: &mut Criterion) {
+    let b1: HashSet<usize> = HashSet::from_iter(0..50_000);
+    let b2: HashSet<usize> = HashSet::from_iter(50_000..100_000);
+    c.bench_function("HashSet<usize>", |b| {
+        b.iter(|| {
+            black_box(&b1 & &b2);
+        })
+    });
+}
+
+fn benchmark_stdhashset2(c: &mut Criterion) {
+    c.bench_function("HashSet<usize> with creation", |b| {
+        b.iter(|| {
+            let b1: HashSet<usize> = HashSet::from_iter(0..50_000);
+            let b2: HashSet<usize> = HashSet::from_iter(50_000..100_000);
+            black_box(&b1 & &b2);
+        })
+    });
+}
+
 criterion_group!(
     normal_benches,
     benchmark_bitvector_simd,
     benchmark_bitvector_simd_u16x8,
     benchmark_bitvector_bitvec,
-    benchmark_bitvector_bitvec_n
+    benchmark_bitvector_bitvec_n,
+    benchmark_stdvec,
+    benchmark_stdhashset,
 );
 criterion_group!(
     with_creation_benches,
     benchmark_bitvector_simd2,
     benchmark_bitvector_simd2_u16x8,
     benchmark_bitvector_bitvec2,
-    benchmark_bitvector_bitvec_n2
+    benchmark_bitvector_bitvec_n2,
+    benchmark_stdvec2,
+    benchmark_stdhashset2,
 );
 criterion_group!(
     resize_false_benches,
