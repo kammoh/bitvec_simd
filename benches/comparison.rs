@@ -101,7 +101,7 @@ fn benchmark_bitvector_bitvec_n(c: &mut Criterion) {
     let b2 = bitvec::bitvec![usize, bitvec::order::Msb0; 0; 100_000];
     c.bench_function("bitvec 1.0", |b| {
         b.iter(|| {
-            black_box(b1.clone() & b2.clone());
+            black_box(b1.clone() & &b2);
         })
     });
 }
