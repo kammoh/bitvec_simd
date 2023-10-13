@@ -26,6 +26,74 @@ fn test_bit_vec_count_ones() {
     assert_eq!(bitvec.count_ones_before(500), 500);
 }
 
+
+#[test]
+fn test_bit_vec_count_ones_before_big() {
+    for sz in 0..=512 {
+        let mut bitvec = BitVec::zeros(sz);
+        for i in 0..sz {
+            assert_eq!(bitvec.count_ones_before(i), i);
+            assert_eq!(bitvec.count_ones_before(i + 1), i);
+            assert_eq!(bitvec.count_ones_before((i + 2).min(sz)), i);
+            assert_eq!(bitvec.count_ones_before(sz), i);
+            bitvec.set(i, true);
+            assert_eq!(bitvec.count_ones_before(i), i);
+            assert_eq!(bitvec.count_ones_before(i + 1), i + 1);
+            assert_eq!(
+                bitvec.count_ones_before(sz),
+                i + 1,
+                "sz: {sz}, i: {i} bitvec:{bitvec:?}"
+            );
+        }
+    }
+}
+
+#[test]
+fn test_bit_vec_count_ones_before_small() {
+    let mut bitvec = BitVec::zeros(4);
+    assert_eq!(bitvec.count_ones(), 0);
+    assert_eq!(bitvec.count_ones_before(0), 0);
+    assert_eq!(bitvec.count_ones_before(1), 0);
+    assert_eq!(bitvec.count_ones_before(2), 0);
+    assert_eq!(bitvec.count_ones_before(3), 0);
+    bitvec.set(3, true);
+
+    assert_eq!(bitvec.count_ones_before(0), 0);
+    assert_eq!(bitvec.count_ones_before(1), 0);
+    assert_eq!(bitvec.count_ones_before(2), 0);
+    assert_eq!(bitvec.count_ones_before(3), 0);
+
+    bitvec.set(2, true);
+
+    assert_eq!(bitvec.count_ones_before(0), 0);
+    assert_eq!(bitvec.count_ones_before(1), 0);
+    assert_eq!(bitvec.count_ones_before(2), 0);
+    assert_eq!(bitvec.count_ones_before(3), 1);
+
+    bitvec.set(0, true);
+
+    assert_eq!(bitvec.count_ones_before(0), 0);
+    assert_eq!(bitvec.count_ones_before(1), 1);
+    assert_eq!(bitvec.count_ones_before(2), 1);
+    assert_eq!(bitvec.count_ones_before(3), 2);
+
+    bitvec.set(1, true);
+
+    assert_eq!(bitvec.count_ones_before(0), 0);
+    assert_eq!(bitvec.count_ones_before(1), 1);
+    assert_eq!(bitvec.count_ones_before(2), 2);
+    assert_eq!(bitvec.count_ones_before(3), 3);
+
+    assert_eq!(bitvec.count_ones_before(4), 4);
+
+    // from the example:
+    let bitvec: BitVec = (0..10_000).map(|x| x % 2 == 0).into();
+    assert_eq!(bitvec.count_ones_before(5000), 2500);
+
+    let bitvec: BitVec = (0..20_000).map(|x| x % 3 == 0).into();
+    assert_eq!(bitvec.count_ones_before(10000), 3334);
+}
+
 #[test]
 fn test_bit_vec_leading_zeros() {
     let mut bitvec = BitVec::zeros(1000);
@@ -73,7 +141,7 @@ fn test_bit_vec_resize() {
         bitvec.resize(i, false);
         assert_eq!(bitvec.len(), i);
     }
-    for i in 3333..0 {
+    for i in (0..3333).rev() {
         bitvec.resize(i, false);
         assert_eq!(bitvec.len(), i);
         assert_eq!(bitvec.count_ones(), i);
@@ -225,6 +293,7 @@ fn test_bitvec_not() {
 }
 
 #[test]
+#[allow(clippy::op_ref)]
 fn test_bitvec_eq() {
     let mut bitvec = BitVec::ones(1000);
     assert_eq!(bitvec, BitVec::ones(1000));
