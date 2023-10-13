@@ -169,8 +169,8 @@ where
     #[inline]
     fn bit_to_len(nbits: usize) -> (usize, usize, usize) {
         (
-            nbits / (B::BIT_WIDTH as usize),
-            (nbits % (B::BIT_WIDTH as usize)) / B::ELEMENT_BIT_WIDTH,
+            nbits / B::BIT_WIDTH,
+            (nbits % B::BIT_WIDTH) / B::ELEMENT_BIT_WIDTH,
             nbits % B::ELEMENT_BIT_WIDTH,
         )
     }
@@ -217,8 +217,8 @@ where
         if bytes > 0 || bits > 0 {
             let mut arr = B::MAX.to_array();
             arr[bytes] = B::MAX_ELEMENT.clear_high_bits((B::ELEMENT_BIT_WIDTH - bits) as u32);
-            for i in (bytes + 1)..B::LANES {
-                arr[i] = B::ZERO_ELEMENT;
+            for a in arr.iter_mut().take(B::LANES).skip(bytes + 1) {
+                *a = B::ZERO_ELEMENT;
             }
             storage.push(B::from(arr));
         }
@@ -308,8 +308,8 @@ where
         while let Some(a0) = iter.next() {
             let mut arr = B::ZERO.to_array();
             arr[0] = *a0;
-            for j in 1..B::LANES {
-                arr[j] = *(iter.next().unwrap_or(&B::ZERO_ELEMENT));
+            for a in arr.iter_mut().take(B::LANES).skip(1) {
+                *a = *(iter.next().unwrap_or(&B::ZERO_ELEMENT));
             }
 
             if storage.len() == i && (bytes > 0 || bits > 0) {
@@ -350,9 +350,9 @@ where
 
         for index in 0..(len as isize) {
             let mut arr = B::ZERO.to_array();
-            for j in 0..B::LANES {
+            for (j, aj) in arr.iter_mut().enumerate().take(B::LANES) {
                 let k = index * B::LANES as isize + j as isize;
-                arr[j] = if k < len as isize {
+                *aj = if k < len as isize {
                     // The only unsafe operation happens here
                     *(ptr.offset(k))
                 } else {
@@ -413,8 +413,8 @@ where
             arr[end_bytes] = arr[end_bytes].clear_high_bits((B::ELEMENT_BIT_WIDTH - bits) as u32);
             end_bytes += 1;
         }
-        for byte_index in end_bytes..B::LANES {
-            arr[byte_index] = B::ZERO_ELEMENT;
+        for a in arr.iter_mut().take(B::LANES).skip(end_bytes) {
+            *a = B::ZERO_ELEMENT;
         }
     }
 
@@ -429,8 +429,8 @@ where
             arr[end_bytes] |= B::MAX_ELEMENT.clear_low_bits(bits as u32);
             end_bytes += 1;
         }
-        for byte_index in end_bytes..bytes_max {
-            arr[byte_index] = B::MAX_ELEMENT;
+        for a in arr.iter_mut().take(bytes_max).skip(end_bytes) {
+            *a = B::MAX_ELEMENT;
         }
     }
 
@@ -607,8 +607,8 @@ where
         if bytes > 0 || bits > 0 {
             let mut arr = B::MAX.to_array();
             arr[bytes] = B::MAX_ELEMENT.clear_high_bits((B::ELEMENT_BIT_WIDTH - bits) as u32);
-            for i in (bytes + 1)..B::LANES {
-                arr[i] = B::ZERO_ELEMENT;
+            for a in arr.iter_mut().take(B::LANES).skip(bytes + 1) {
+                *a = B::ZERO_ELEMENT;
             }
             // unwrap here is safe since bytes > 0 || bits > 0 => self.nbits > 0
             *(self.storage.last_mut().unwrap()) = B::from(arr);
@@ -740,8 +740,8 @@ where
             let s: &mut B = &mut storage[i];
             let mut arr = s.to_array();
             arr[bytes] = arr[bytes].clear_high_bits((B::ELEMENT_BIT_WIDTH - bits) as u32);
-            for index in (bytes + 1)..B::LANES {
-                arr[index] = B::ZERO_ELEMENT;
+            for a in arr.iter_mut().take(B::LANES).skip(bytes + 1) {
+                *a = B::ZERO_ELEMENT;
             }
             *s = arr.into();
         }
@@ -820,7 +820,7 @@ where
     /// ```
     pub fn count_ones_before(&self, index: usize) -> usize {
         assert!(index <= self.nbits);
-        if index <= 0 {
+        if index == 0 {
             return 0;
         }
         let (i, bytes, bits) = Self::bit_to_len(index);
@@ -837,14 +837,14 @@ where
             .sum::<u32>();
         if bytes > 0 || bits > 0 {
             // Safe unwrap here
-            let arr = self.storage.iter().skip(i).next().unwrap().to_array();
+            let arr = self.storage.get(i).unwrap().to_array();
             ones += arr
                 .into_iter()
                 .take(bytes)
                 .map(|x| x.count_ones())
                 .sum::<u32>();
             if bits > 0 {
-                let x = arr.into_iter().skip(bytes).next().unwrap();
+                let x = arr.into_iter().nth(bytes).unwrap();
                 ones +=
                     (x & (B::ONE_ELEMENT.wrapping_shl(bits as u32) - B::ONE_ELEMENT)).count_ones();
             }
@@ -898,7 +898,7 @@ where
             if extra_leading_zeros > 0 {
                 extra_leading_zeros = B::BIT_WIDTH - extra_leading_zeros
             }
-            return raw_leading_zeros as usize - extra_leading_zeros;
+            return raw_leading_zeros - extra_leading_zeros;
         }
 
         self.nbits
