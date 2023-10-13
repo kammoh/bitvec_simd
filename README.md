@@ -2,7 +2,10 @@
 
 [![GHA Status]][GitHub Actions] [![Latest Version]][crates.io] [![Documentation]][docs.rs] ![License] [![Minimum Supported Rust Version]][Rust 1.56]
 
+**This is a fork of [GCCFeli/bitvec_simd](https://github.com/GCCFeli/bitvec_simd.git).**
+
 A rust library for bit vector, featuring:
+
 - SIMD accelerated via [wide](https://crates.io/crates/wide).
 - Serialize and deserialize via [serde](https://crates.io/crates/serde).
 - Stack allocation when bit count is small via [smallvec](https://crates.io/crates/smallvec).
@@ -110,10 +113,10 @@ Some code of this crate is from (https://github.com/horasal/bitvector_simd)
 ## License
 
 This project is licensed under [MIT License](https://opensource.org/licenses/MIT)
-  ([LICENSE-MIT](https://github.com/GCCFeli/bitvec_simd/blob/master/LICENSE)).
+  ([LICENSE-MIT](https://github.com/kammoh/bitvec_simd/blob/master/LICENSE)).
 
-[GHA Status]: https://github.com/GCCFeli/bitvec_simd/actions/workflows/rust.yml/badge.svg?event=push
-[GitHub Actions]: https://github.com/GCCFeli/bitvec_simd/actions
+[GHA Status]: https://github.com/kammoh/bitvec_simd/actions/workflows/rust.yml/badge.svg?event=push
+[GitHub Actions]: https://github.com/kammoh/bitvec_simd/actions
 [crates.io]: https://crates.io/crates/bitvec_simd
 [Latest Version]: https://img.shields.io/crates/v/bitvec_simd.svg
 [Documentation]: https://docs.rs/bitvec_simd/badge.svg
