@@ -41,8 +41,8 @@ fn benchmark_bitvector_simd4(c: &mut Criterion) {
 }
 
 fn benchmark_bitvector_simd_u16x8(c: &mut Criterion) {
-    let b1 = bitvec_simd::BitVecSimd::<[wide::u16x8; 4], 8>::ones(100_000);
-    let b2 = bitvec_simd::BitVecSimd::<[wide::u16x8; 4], 8>::zeros(100_000);
+    let b1 = bitvec_simd::BitVecSimd::<wide::u16x8, 8>::ones(100_000);
+    let b2 = bitvec_simd::BitVecSimd::<wide::u16x8, 8>::zeros(100_000);
     c.bench_function("bitvec_simd_u16x8(this crate)", |b| {
         b.iter(|| {
             black_box(b1.and_cloned(&b2));
@@ -53,8 +53,8 @@ fn benchmark_bitvector_simd_u16x8(c: &mut Criterion) {
 fn benchmark_bitvector_simd2_u16x8(c: &mut Criterion) {
     c.bench_function("bitvec_simd_u16x8(this crate) with creation", |b| {
         b.iter(|| {
-            let b1 = bitvec_simd::BitVecSimd::<[wide::u16x8; 4], 8>::ones(100_000);
-            let b2 = bitvec_simd::BitVecSimd::<[wide::u16x8; 4], 8>::zeros(100_000);
+            let b1 = bitvec_simd::BitVecSimd::<wide::u16x8, 8>::ones(100_000);
+            let b2 = bitvec_simd::BitVecSimd::<wide::u16x8, 8>::zeros(100_000);
             black_box(b1.and(b2));
         })
     });
@@ -63,7 +63,7 @@ fn benchmark_bitvector_simd2_u16x8(c: &mut Criterion) {
 fn benchmark_bitvector_simd3_u16x8(c: &mut Criterion) {
     c.bench_function("bitvec_simd_u16x8(this crate) resize false", |b| {
         b.iter(|| {
-            let mut b1 = bitvec_simd::BitVecSimd::<[wide::u16x8; 4], 8>::ones(100_000);
+            let mut b1 = bitvec_simd::BitVecSimd::<wide::u16x8, 8>::ones(100_000);
             black_box(b1.resize(200_000, false));
         })
     });
@@ -72,7 +72,7 @@ fn benchmark_bitvector_simd3_u16x8(c: &mut Criterion) {
 fn benchmark_bitvector_simd4_u16x8(c: &mut Criterion) {
     c.bench_function("bitvec_simd_u16x8(this crate) resize true", |b| {
         b.iter(|| {
-            let mut b1 = bitvec_simd::BitVecSimd::<[wide::u16x8; 4], 8>::ones(100_000);
+            let mut b1 = bitvec_simd::BitVecSimd::<wide::u16x8, 8>::ones(100_000);
             black_box(b1.resize(200_000, true));
         })
     });
