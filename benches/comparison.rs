@@ -50,6 +50,46 @@ fn benchmark_bitvector_simd_u16x8(c: &mut Criterion) {
     });
 }
 
+fn benchmark_bitvector_simd_u32x4(c: &mut Criterion) {
+    let b1 = bitvec_simd::BitVecSimd::<wide::u32x4, 4>::ones(100_000);
+    let b2 = bitvec_simd::BitVecSimd::<wide::u32x4, 4>::zeros(100_000);
+    c.bench_function("bitvec_simd_u32x4(this crate)", |b| {
+        b.iter(|| {
+            black_box(b1.and_cloned(&b2));
+        })
+    });
+}
+
+fn benchmark_bitvector_simd_u32x8(c: &mut Criterion) {
+    let b1 = bitvec_simd::BitVecSimd::<wide::u32x8, 8>::ones(100_000);
+    let b2 = bitvec_simd::BitVecSimd::<wide::u32x8, 8>::zeros(100_000);
+    c.bench_function("bitvec_simd_u32x8(this crate)", |b| {
+        b.iter(|| {
+            black_box(b1.and_cloned(&b2));
+        })
+    });
+}
+
+fn benchmark_bitvector_simd_u64x2(c: &mut Criterion) {
+    let b1 = bitvec_simd::BitVecSimd::<wide::u64x2, 2>::ones(100_000);
+    let b2 = bitvec_simd::BitVecSimd::<wide::u64x2, 2>::zeros(100_000);
+    c.bench_function("bitvec_simd_u64x2(this crate)", |b| {
+        b.iter(|| {
+            black_box(b1.and_cloned(&b2));
+        })
+    });
+}
+
+fn benchmark_bitvector_simd_u64x4(c: &mut Criterion) {
+    let b1 = bitvec_simd::BitVecSimd::<wide::u64x4, 4>::ones(100_000);
+    let b2 = bitvec_simd::BitVecSimd::<wide::u64x4, 4>::zeros(100_000);
+    c.bench_function("bitvec_simd_u64x4(this crate)", |b| {
+        b.iter(|| {
+            black_box(b1.and_cloned(&b2));
+        })
+    });
+}
+
 fn benchmark_bitvector_simd2_u16x8(c: &mut Criterion) {
     c.bench_function("bitvec_simd_u16x8(this crate) with creation", |b| {
         b.iter(|| {
@@ -190,6 +230,10 @@ criterion_group!(
     normal_benches,
     benchmark_bitvector_simd,
     benchmark_bitvector_simd_u16x8,
+    benchmark_bitvector_simd_u32x4,
+    benchmark_bitvector_simd_u32x8,
+    benchmark_bitvector_simd_u64x2,
+    benchmark_bitvector_simd_u64x4,
     benchmark_bitvector_bitvec,
     benchmark_bitvector_bitvec_n,
     benchmark_stdvec,
