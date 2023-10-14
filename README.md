@@ -2,7 +2,7 @@
 
 [![GHA Status]][GitHub Actions] [![Latest Version]][crates.io] [![Documentation]][docs.rs] ![License] [![Minimum Supported Rust Version]][Rust 1.56]
 
-**This is a fork of [GCCFeli/bitvec_simd](https://github.com/GCCFeli/bitvec_simd.git).**
+**This is a fork of [GCCFeli/bitvec_simd](https://github.com/GCCFeli/bitvec_simd.git)**
 
 A rust library for bit vector, featuring:
 
@@ -10,7 +10,7 @@ A rust library for bit vector, featuring:
 - Serialize and deserialize via [serde](https://crates.io/crates/serde).
 - Stack allocation when bit count is small via [smallvec](https://crates.io/crates/smallvec).
 - `#![no_std]` support.
-- *Many* performance optimisations.
+- *Many* performance optimizations.
 
 ## Usage
 
@@ -53,12 +53,12 @@ let new_bitvec2 = bitvec & bitvec2; // and operation, consume both bitvec
 assert_eq!(new_bitvec, new_bitvec2);
 ```
 
-## Performance 
+## Performance
 
 Compared on AMD Ryzen 7 3700X, aginst:
 
-* [bit\_vec 0.6.3](https://crates.io/crates/bit-vec)
-* [bitvec 1.0.0](https://crates.io/crates/bitvec)
+- [bit\_vec 0.6.3](https://crates.io/crates/bit-vec)
+- [bitvec 1.0.0](https://crates.io/crates/bitvec)
 
 ```
 $ cargo bench       
@@ -104,11 +104,9 @@ Found 9 outliers among 100 measurements (9.00%)
   4 (4.00%) high severe
 ```
 
-##
-
 ## Reference
 
-Some code of this crate is from (https://github.com/horasal/bitvector_simd)
+Some code of this crate is from [horasal/bitvector_simd](https://github.com/horasal/bitvector_simd)
 
 ## License
 
@@ -124,4 +122,3 @@ This project is licensed under [MIT License](https://opensource.org/licenses/MIT
 [License]: https://img.shields.io/crates/l/bitvec_simd.svg
 [Minimum Supported Rust Version]: https://img.shields.io/badge/Rust-1.56+-blue?color=fc8d62&logo=rust
 [Rust 1.56]: https://github.com/rust-lang/rust/blob/master/RELEASES.md#version-1561-2021-11-01
-

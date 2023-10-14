@@ -723,8 +723,7 @@ where
     }
 
     pub fn difference_cloned(&self, other: &Self) -> Self {
-        // FIXME: This implementation has one extra clone
-        self.and_cloned(&other.clone().not())
+        self.and_cloned(&other.not())
     }
 
     // not should make sure bits > nbits is 0
